@@ -74,9 +74,10 @@
 
       <DeckConfig
         v-for="(deck, i) in settings.decks"
-        :key="deck.deckName + '-' + deckConfigKey"
+        :key="deck.deckName"
         :deck="deck"
         :anki-url="settings.ankiUrl"
+        :retry-trigger="deckConfigKey"
         @update="updateDeck(i, $event)"
         @remove="removeDeck(i)"
       />
@@ -187,7 +188,7 @@ async function testCard() {
   testError.value = ''
   try {
     const deck = settings.value.decks[Math.floor(Math.random() * settings.value.decks.length)]
-    const card = await getRandomCard(deck, settings.value.ankiUrl)
+    const card = { ...await getRandomCard(deck, settings.value.ankiUrl), isTest: true }
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
     if (!tab?.id) {
       testError.value = 'Nenhuma aba ativa encontrada.'

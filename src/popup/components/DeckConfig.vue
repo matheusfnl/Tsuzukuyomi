@@ -44,6 +44,7 @@ import FieldSelect from './FieldSelect.vue'
 const props = defineProps({
   deck: { type: Object, required: true },
   ankiUrl: { type: String, default: 'http://localhost:8765' },
+  retryTrigger: { type: Number, default: 0 },
 })
 
 const emit = defineEmits(['update', 'remove'])
@@ -52,7 +53,8 @@ const local = ref({ ...props.deck })
 const fields = ref([])
 const loadingFields = ref(true)
 
-onMounted(async () => {
+async function fetchFields() {
+  loadingFields.value = true
   try {
     const raw = await getFieldsForDeck(props.deck.deckName, props.ankiUrl)
     fields.value = raw.map(f => ({ value: f, label: f }))
@@ -61,11 +63,18 @@ onMounted(async () => {
   } finally {
     loadingFields.value = false
   }
-})
+}
+
+onMounted(fetchFields)
 
 watch(() => props.deck, (val) => {
   local.value = { ...val }
 }, { deep: true })
+
+watch(() => props.retryTrigger, async (val) => {
+  if (val === 0 || fields.value.length > 0) return
+  await fetchFields()
+})
 
 function onField(key, value) {
   local.value[key] = value
