@@ -10,10 +10,10 @@
       <div v-if="!revealed" class="input-area">
         <p class="attempts-hint">
           <template v-if="cooldown > 0">
-            Aguarde {{ cooldown }}s para tentar novamente
+            Wait {{ cooldown }}s before trying again
           </template>
           <template v-else>
-            {{ attemptsLeft }} tentativa{{ attemptsLeft !== 1 ? 's' : '' }} restante{{ attemptsLeft !== 1 ? 's' : '' }}
+            {{ attemptsLeft }} attempt{{ attemptsLeft !== 1 ? 's' : '' }} left
           </template>
         </p>
         <input
@@ -22,19 +22,19 @@
           class="answer-input"
           :class="{ shake: shaking, disabled: cooldown > 0 }"
           :disabled="cooldown > 0"
-          placeholder="Digite a resposta..."
+          placeholder="Type the answer..."
           @keydown.enter="checkAnswer"
           autofocus
         />
         <div class="buttons">
-          <button v-if="!failed" class="btn btn-primary" :disabled="cooldown > 0" @click="checkAnswer">Confirmar</button>
-          <button v-if="showClose" class="btn btn-ghost" @click="dismiss">Fechar</button>
+          <button v-if="!failed" class="btn btn-primary" :disabled="cooldown > 0" @click="checkAnswer">Confirm</button>
+          <button v-if="showClose" class="btn btn-ghost" @click="dismiss">Close</button>
         </div>
       </div>
 
       <div v-else class="revealed-area">
         <div class="answer-reveal" v-html="card.answer" />
-        <button class="btn btn-primary" @click="dismiss">Continuar</button>
+        <button class="btn btn-primary" @click="dismiss">Continue</button>
       </div>
     </div>
   </div>

@@ -5,33 +5,33 @@
       <button class="btn-remove" @click="emit('remove')">✕</button>
     </div>
 
-    <div v-if="loadingFields" class="loading">Carregando campos...</div>
+    <div v-if="loadingFields" class="loading">Loading fields...</div>
 
     <template v-else-if="fields.length">
       <div class="field-row">
         <FieldSelect
-          label="Pergunta"
+          label="Question"
           :fields="fields"
           :value="local.questionField"
           @update="onField('questionField', $event)"
         />
         <FieldSelect
-          label="Resposta"
+          label="Answer"
           :fields="fields"
           :value="local.answerField"
           @update="onField('answerField', $event)"
         />
       </div>
       <FieldSelect
-        label="Frase (opcional)"
-        :fields="[{ value: '', label: '— nenhum —' }, ...fields]"
+        label="Sentence (optional)"
+        :fields="[{ value: '', label: '— none —' }, ...fields]"
         :value="local.sentenceField"
         @update="onField('sentenceField', $event)"
       />
     </template>
 
     <div v-else class="field-error">
-      Não foi possível carregar os campos. O Anki está aberto?
+      Could not load fields. Is Anki open?
     </div>
   </div>
 </template>
@@ -85,7 +85,7 @@ function onField(key, value) {
 <style scoped>
 .deck-item {
   background: var(--bg-section, #1a1a2e);
-  border: 1px solid var(--border, #2d2d4e);
+  border: 1px solid var(--deck-border, #2d2d4e);
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 8px;

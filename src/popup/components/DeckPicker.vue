@@ -2,7 +2,7 @@
   <div class="picker-backdrop" @click.self="$emit('close')">
     <div class="picker">
       <div class="picker-header">
-        <span>Selecionar deck</span>
+        <span>Select deck</span>
         <button @click="$emit('close')">✕</button>
       </div>
       <div class="picker-list">
@@ -15,7 +15,7 @@
           @click="$emit('select', deck)"
         >
           <span class="deck-option-name">{{ deck }}</span>
-          <span v-if="selectedDecks.includes(deck)" class="added-badge">Adicionado</span>
+          <span v-if="selectedDecks.includes(deck)" class="added-badge">Added</span>
         </button>
       </div>
     </div>

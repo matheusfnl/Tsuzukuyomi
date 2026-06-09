@@ -2,7 +2,7 @@
   <div class="field-select">
     <label class="field-label">{{ label }}</label>
     <select :value="value" @change="$emit('update', $event.target.value)">
-      <option v-if="!value" value="" disabled>Selecionar...</option>
+      <option v-if="!value" value="" disabled>Select...</option>
       <option v-for="f in fields" :key="f.value" :value="f.value">{{ f.label }}</option>
     </select>
   </div>

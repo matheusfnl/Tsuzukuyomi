@@ -37,10 +37,42 @@ export async function getFieldsForDeck(deckName, url) {
   return [...new Set(fieldSets.flat())]
 }
 
+async function resolveImages(html, baseUrl) {
+  if (!html || !html.includes('<img')) return html
+  const imgRegex = /<img([^>]*?)src="([^"]+)"([^>]*?)>/gi
+  const matches = [...html.matchAll(imgRegex)]
+  if (!matches.length) return html
+
+  const resolved = await Promise.all(
+    matches.map(async ([full, pre, src, post]) => {
+      if (src.startsWith('data:') || src.startsWith('http')) return [full, full]
+      try {
+        const b64 = await invoke('retrieveMediaFile', { filename: src }, baseUrl)
+        if (!b64) return [full, full]
+        const ext = src.split('.').pop().toLowerCase()
+        const mime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg'
+          : ext === 'png' ? 'image/png'
+          : ext === 'gif' ? 'image/gif'
+          : ext === 'webp' ? 'image/webp'
+          : 'image/png'
+        return [full, `<img${pre}src="data:${mime};base64,${b64}"${post}>`]
+      } catch {
+        return [full, full]
+      }
+    })
+  )
+
+  let out = html
+  for (const [original, replacement] of resolved) {
+    out = out.replace(original, replacement)
+  }
+  return out
+}
+
 export async function getRandomCard(deckConfig, url) {
   const { deckName, questionField, answerField, sentenceField } = deckConfig
   const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` }, url)
-  if (!noteIds.length) throw new Error(`Deck "${deckName}" está vazio`)
+  if (!noteIds.length) throw new Error(`Deck "${deckName}" is empty`)
 
   const randomId = noteIds[Math.floor(Math.random() * noteIds.length)]
   const notes = await invoke('notesInfo', { notes: [randomId] }, url)
@@ -51,12 +83,13 @@ export async function getRandomCard(deckConfig, url) {
     return note.fields[fieldName].value
   }
 
-  return {
-    question: getFieldValue(questionField),
-    answer: getFieldValue(answerField),
-    sentence: sentenceField ? getFieldValue(sentenceField) : null,
-    deckName,
-  }
+  const [question, answer, sentence] = await Promise.all([
+    resolveImages(getFieldValue(questionField), url),
+    resolveImages(getFieldValue(answerField), url),
+    resolveImages(sentenceField ? getFieldValue(sentenceField) : null, url),
+  ])
+
+  return { question, answer, sentence, deckName }
 }
 
 export async function pingAnki(url) {

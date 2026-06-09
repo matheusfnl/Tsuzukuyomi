@@ -67,9 +67,18 @@
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
-  color: #ffffff;
+  color: var(--text);
   line-height: 1.2;
   word-break: break-word;
+}
+
+.question img {
+  max-width: 100%;
+  max-height: 280px;
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .sentence {

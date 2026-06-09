@@ -6,7 +6,7 @@
         Tsuzukuyomi
       </span>
       <div class="header-actions">
-        <button class="btn-theme" @click="toggleTheme" :title="settings.theme === 'light' ? 'Tema escuro' : 'Tema claro'">
+        <button class="btn-theme" @click="toggleTheme" :title="settings.theme === 'light' ? 'Dark theme' : 'Light theme'">
           {{ settings.theme === 'light' ? '🌙' : '☀️' }}
         </button>
         <label class="toggle">
@@ -17,11 +17,11 @@
     </header>
 
     <div v-if="!ankiChecking && !ankiConnected" class="banner-error">
-      AnkiConnect não encontrado. Abra o Anki com o addon instalado.
+      AnkiConnect not found. Open Anki with the addon installed.
     </div>
 
     <div class="section">
-      <label class="section-title">AnkiConnect</label>
+      <label class="section-title">AnkiConnect URL</label>
       <div class="url-row">
         <div class="input-group url-input-group">
           <input
@@ -38,10 +38,10 @@
     </div>
 
     <div class="section">
-      <label class="section-title">Intervalo entre revisões</label>
+      <label class="section-title">Review interval</label>
       <div class="interval-row">
         <div class="interval-field">
-          <span class="field-label">Mínimo</span>
+          <span class="field-label">Minimum</span>
           <div class="input-group">
             <input type="number" v-model.number="settings.intervalMin" min="1" max="120" @change="save" />
             <span class="unit">min</span>
@@ -49,7 +49,7 @@
         </div>
         <div class="interval-sep">–</div>
         <div class="interval-field">
-          <span class="field-label">Máximo</span>
+          <span class="field-label">Maximum</span>
           <div class="input-group">
             <input type="number" v-model.number="settings.intervalMax" min="1" max="120" @change="save" />
             <span class="unit">min</span>
@@ -63,10 +63,10 @@
         <label class="section-title">Decks</label>
         <div class="deck-header-actions">
           <button class="btn-add" :disabled="!ankiConnected || loadingDecks" @click="showDeckPicker = true">
-            + Adicionar
+            + Add
           </button>
           <button class="btn-test" :disabled="!canTest" :class="{ loading: testing }" @click="testCard">
-            {{ testing ? '...' : 'Testar' }}
+            {{ testing ? '...' : 'Test' }}
           </button>
         </div>
       </div>
@@ -74,7 +74,7 @@
       <div v-if="testError" class="banner-error banner-test-error">{{ testError }}</div>
 
       <div v-if="settings.decks.length === 0" class="empty-decks">
-        Nenhum deck selecionado
+        No decks selected
       </div>
 
       <DeckConfig
@@ -201,17 +201,17 @@ async function testCard() {
     const card = { ...await getRandomCard(deck, settings.value.ankiUrl), isTest: true }
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
     if (!tab?.id) {
-      testError.value = 'Nenhuma aba ativa encontrada.'
+      testError.value = 'No active tab found.'
       return
     }
     try {
       await sendCardToTab(tab.id, card)
       window.close()
     } catch {
-      testError.value = 'Não foi possível injetar na aba ativa. Tente em uma página web normal.'
+      testError.value = 'Could not inject into the active tab. Try on a regular web page.'
     }
   } catch (err) {
-    testError.value = `Erro: ${err.message}`
+    testError.value = `Error: ${err.message}`
   } finally {
     testing.value = false
   }
@@ -220,8 +220,8 @@ async function testCard() {
 
 <style>
 /* propaga variáveis para componentes filhos (scoped não atravessa slots) */
-.theme-dark { --bg:#0f0f1a;--bg-section:#1a1a2e;--bg-input:#1e1e32;--border:#2d2d4e;--border-soft:#1e1e32;--text:#e8e8f0;--text-muted:#7c7ca0;--text-faint:#4a4a6a; }
-.theme-light { --bg:#f0f0f8;--bg-section:#ffffff;--bg-input:#e8e8f4;--border:#d0d0e8;--border-soft:#e4e4f0;--text:#1a1a2e;--text-muted:#6060a0;--text-faint:#a0a0c0; }
+.theme-dark { --bg:#0f0f1a;--bg-section:#1a1a2e;--bg-input:#1e1e32;--border:#2d2d4e;--border-soft:#1e1e32;--text:#e8e8f0;--text-muted:#7c7ca0;--text-faint:#4a4a6a;--deck-border:#2d2d4e; }
+.theme-light { --bg:#f0f0f8;--bg-section:#e4e4f0;--bg-input:#d8d8ec;--border:#d0d0e8;--border-soft:#e4e4f0;--text:#1a1a2e;--text-muted:#6060a0;--text-faint:#a0a0c0;--deck-border:transparent; }
 </style>
 
 <style scoped>
@@ -237,6 +237,7 @@ async function testCard() {
   --text-faint:  #4a4a6a;
   --slider-off:  #2a2a42;
   --slider-dot:  #7c7ca0;
+  --deck-border: #2d2d4e;
   --btn-test-bg: rgba(255,255,255,0.08);
   --btn-test-bg-hover: rgba(255,255,255,0.14);
   --btn-test-color: #c8c8e8;
@@ -244,8 +245,8 @@ async function testCard() {
 
 .theme-light {
   --bg:          #f0f0f8;
-  --bg-section:  #ffffff;
-  --bg-input:    #e8e8f4;
+  --bg-section:  #e4e4f0;
+  --bg-input:    #d8d8ec;
   --border:      #d0d0e8;
   --border-soft: #e4e4f0;
   --text:        #1a1a2e;
@@ -256,6 +257,7 @@ async function testCard() {
   --btn-test-bg: rgba(0,0,0,0.06);
   --btn-test-bg-hover: rgba(0,0,0,0.10);
   --btn-test-color: #4a4a7a;
+  --deck-border: transparent;
 }
 
 /* ── Layout ──────────────────────────────────────────── */
