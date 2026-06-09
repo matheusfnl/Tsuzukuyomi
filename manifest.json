@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Tsuzukuyomi",
   "version": "1.0.0",
-  "description": "Vocabulário japonês com Anki no seu fluxo de trabalho",
+  "description": "Japanese flashcards that interrupt your browsing — because you won't study on your own.",
   "permissions": ["storage", "tabs", "activeTab", "scripting"],
   "host_permissions": ["http://localhost:8765/*", "<all_urls>"],
   "background": {
