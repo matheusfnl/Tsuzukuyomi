@@ -5,6 +5,7 @@ export const DEFAULT_SETTINGS = {
   intervalMin: 10,
   intervalMax: 20,
   ankiUrl: 'http://localhost:8765',
+  theme: 'dark',
   decks: [],
 }
 

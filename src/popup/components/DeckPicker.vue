@@ -42,8 +42,8 @@ defineEmits(['select', 'close'])
 }
 
 .picker {
-  background: #1a1a2e;
-  border: 1px solid #2d2d4e;
+  background: var(--bg-section, #1a1a2e);
+  border: 1px solid var(--border, #2d2d4e);
   border-radius: 12px 12px 0 0;
   width: 100%;
   max-height: 280px;
@@ -56,16 +56,16 @@ defineEmits(['select', 'close'])
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 1px solid #2d2d4e;
+  border-bottom: 1px solid var(--border, #2d2d4e);
   font-size: 13px;
   font-weight: 600;
-  color: #c8c8e8;
+  color: var(--text, #c8c8e8);
 }
 
 .picker-header button {
   background: none;
   border: none;
-  color: #7c7ca0;
+  color: var(--text-muted, #7c7ca0);
   cursor: pointer;
   font-size: 14px;
 }
@@ -79,7 +79,7 @@ defineEmits(['select', 'close'])
   width: 100%;
   background: none;
   border: none;
-  border-bottom: 1px solid #1e1e32;
+  border-bottom: 1px solid var(--border-soft, #1e1e32);
   padding: 10px 16px;
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@ defineEmits(['select', 'close'])
 }
 
 .deck-option:hover:not(:disabled) {
-  background: rgba(255,255,255,0.04);
+  background: rgba(0,0,0,0.04);
 }
 
 .deck-option:disabled {
@@ -99,7 +99,7 @@ defineEmits(['select', 'close'])
 
 .deck-option-name {
   font-size: 15px;
-  color: #e8e8f0;
+  color: var(--text, #e8e8f0);
 }
 
 .added-badge {

@@ -1,5 +1,5 @@
 <template>
-  <div class="overlay">
+  <div class="overlay" :class="'theme-' + theme">
     <div class="card">
       <div class="deck-label">{{ card.deckName }}</div>
 
@@ -27,7 +27,7 @@
           autofocus
         />
         <div class="buttons">
-          <button class="btn btn-primary" :disabled="cooldown > 0" @click="checkAnswer">Confirmar</button>
+          <button v-if="!failed" class="btn btn-primary" :disabled="cooldown > 0" @click="checkAnswer">Confirmar</button>
           <button v-if="showClose" class="btn btn-ghost" @click="dismiss">Fechar</button>
         </div>
       </div>
@@ -46,6 +46,7 @@ import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
 const props = defineProps({
   card: { type: Object, required: true },
   onDismiss: { type: Function, required: true },
+  theme: { type: String, default: 'dark' },
 })
 
 const MAX_ATTEMPTS = 3

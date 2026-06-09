@@ -84,8 +84,8 @@ function onField(key, value) {
 
 <style scoped>
 .deck-item {
-  background: #1a1a2e;
-  border: 1px solid #2d2d4e;
+  background: var(--bg-section, #1a1a2e);
+  border: 1px solid var(--border, #2d2d4e);
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 8px;
@@ -103,7 +103,7 @@ function onField(key, value) {
 .deck-name {
   font-size: 15px;
   font-weight: 600;
-  color: #c8c8e8;
+  color: var(--text, #c8c8e8);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -128,7 +128,7 @@ function onField(key, value) {
 
 .loading, .field-error {
   font-size: 13px;
-  color: #7c7ca0;
+  color: var(--text-muted, #7c7ca0);
   text-align: center;
   padding: 4px 0;
 }

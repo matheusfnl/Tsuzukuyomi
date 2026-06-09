@@ -3,11 +3,22 @@ import browser from 'webextension-polyfill'
 import Overlay from './Overlay.vue'
 import overlayCSS from './overlay.css?inline'
 
+async function getTheme() {
+  try {
+    const result = await browser.storage.local.get('settings')
+    return result?.settings?.theme || 'dark'
+  } catch {
+    return 'dark'
+  }
+}
+
 let overlayApp = null
 let shadowHost = null
 
-function mountOverlay(card) {
+async function mountOverlay(card) {
   if (overlayApp) return
+
+  const theme = await getTheme()
 
   shadowHost = document.createElement('div')
   shadowHost.id = 'spaced-review-host'
@@ -25,6 +36,7 @@ function mountOverlay(card) {
 
   overlayApp = createApp(Overlay, {
     card,
+    theme,
     onDismiss: unmountOverlay,
   })
   overlayApp.mount(mountPoint)

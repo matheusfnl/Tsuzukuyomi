@@ -1,14 +1,19 @@
 <template>
-  <div class="popup">
+  <div class="popup" :class="settings.theme === 'light' ? 'theme-light' : 'theme-dark'">
     <header class="header">
       <span class="logo">
         <img :src="iconUrl" class="logo-icon" alt="" />
         Tsuzukuyomi
       </span>
-      <label class="toggle">
-        <input type="checkbox" v-model="settings.enabled" @change="save" />
-        <span class="slider" />
-      </label>
+      <div class="header-actions">
+        <button class="btn-theme" @click="toggleTheme" :title="settings.theme === 'light' ? 'Tema escuro' : 'Tema claro'">
+          {{ settings.theme === 'light' ? '🌙' : '☀️' }}
+        </button>
+        <label class="toggle">
+          <input type="checkbox" v-model="settings.enabled" @change="save" />
+          <span class="slider" />
+        </label>
+      </div>
     </header>
 
     <div v-if="!ankiChecking && !ankiConnected" class="banner-error">
@@ -177,6 +182,11 @@ function updateDeck(index, updated) {
   save()
 }
 
+function toggleTheme() {
+  settings.value.theme = settings.value.theme === 'dark' ? 'light' : 'dark'
+  save()
+}
+
 function removeDeck(index) {
   settings.value.decks.splice(index, 1)
   save()
@@ -208,10 +218,52 @@ async function testCard() {
 }
 </script>
 
+<style>
+/* propaga variáveis para componentes filhos (scoped não atravessa slots) */
+.theme-dark { --bg:#0f0f1a;--bg-section:#1a1a2e;--bg-input:#1e1e32;--border:#2d2d4e;--border-soft:#1e1e32;--text:#e8e8f0;--text-muted:#7c7ca0;--text-faint:#4a4a6a; }
+.theme-light { --bg:#f0f0f8;--bg-section:#ffffff;--bg-input:#e8e8f4;--border:#d0d0e8;--border-soft:#e4e4f0;--text:#1a1a2e;--text-muted:#6060a0;--text-faint:#a0a0c0; }
+</style>
+
 <style scoped>
+/* ── Temas ───────────────────────────────────────────── */
+.theme-dark {
+  --bg:          #0f0f1a;
+  --bg-section:  #1a1a2e;
+  --bg-input:    #1e1e32;
+  --border:      #2d2d4e;
+  --border-soft: #1e1e32;
+  --text:        #e8e8f0;
+  --text-muted:  #7c7ca0;
+  --text-faint:  #4a4a6a;
+  --slider-off:  #2a2a42;
+  --slider-dot:  #7c7ca0;
+  --btn-test-bg: rgba(255,255,255,0.08);
+  --btn-test-bg-hover: rgba(255,255,255,0.14);
+  --btn-test-color: #c8c8e8;
+}
+
+.theme-light {
+  --bg:          #f0f0f8;
+  --bg-section:  #ffffff;
+  --bg-input:    #e8e8f4;
+  --border:      #d0d0e8;
+  --border-soft: #e4e4f0;
+  --text:        #1a1a2e;
+  --text-muted:  #6060a0;
+  --text-faint:  #a0a0c0;
+  --slider-off:  #d0d0e8;
+  --slider-dot:  #a0a0c0;
+  --btn-test-bg: rgba(0,0,0,0.06);
+  --btn-test-bg-hover: rgba(0,0,0,0.10);
+  --btn-test-color: #4a4a7a;
+}
+
+/* ── Layout ──────────────────────────────────────────── */
 .popup {
   display: flex;
   flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .header {
@@ -219,7 +271,7 @@ async function testCard() {
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  border-bottom: 1px solid #1e1e32;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .logo {
@@ -237,6 +289,24 @@ async function testCard() {
   object-fit: contain;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-theme {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+.btn-theme:hover { opacity: 1; }
+
 .toggle {
   position: relative;
   display: inline-block;
@@ -249,7 +319,7 @@ async function testCard() {
 .slider {
   position: absolute;
   inset: 0;
-  background: #2a2a42;
+  background: var(--slider-off);
   border-radius: 24px;
   transition: background 0.25s;
   cursor: pointer;
@@ -262,7 +332,7 @@ async function testCard() {
   width: 18px;
   left: 3px;
   bottom: 3px;
-  background: #7c7ca0;
+  background: var(--slider-dot);
   border-radius: 50%;
   transition: transform 0.25s, background 0.25s;
 }
@@ -286,7 +356,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 
 .section {
   padding: 14px 16px;
-  border-bottom: 1px solid #1e1e32;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .section-header {
@@ -301,7 +371,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7c7ca0;
+  color: var(--text-muted);
   display: block;
   margin-bottom: 10px;
 }
@@ -323,14 +393,14 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 
 .field-label {
   font-size: 13px;
-  color: #7c7ca0;
+  color: var(--text-muted);
 }
 
 .input-group {
   display: flex;
   align-items: center;
-  background: #1e1e32;
-  border: 1px solid #2d2d4e;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -340,7 +410,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   background: transparent;
   border: none;
   outline: none;
-  color: #e8e8f0;
+  color: var(--text);
   font-size: 15px;
   padding: 7px 10px;
   width: 0;
@@ -351,18 +421,16 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   -webkit-appearance: none;
 }
 
-.input-group input[type=number] {
-  -moz-appearance: textfield;
-}
+.input-group input[type=number] { -moz-appearance: textfield; }
 
 .unit {
   font-size: 14px;
-  color: #7c7ca0;
+  color: var(--text-muted);
   padding: 0 10px;
 }
 
 .interval-sep {
-  color: #4a4a6a;
+  color: var(--text-faint);
   padding-top: 18px;
 }
 
@@ -386,13 +454,11 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 }
 
 .btn-test {
-  background: rgba(255, 255, 255, 0.08);
-  color: #c8c8e8;
+  background: var(--btn-test-bg);
+  color: var(--btn-test-color);
 }
 
-.btn-test:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.14);
-}
+.btn-test:hover:not(:disabled) { background: var(--btn-test-bg-hover); }
 
 .btn-add:disabled, .btn-test:disabled {
   opacity: 0.4;
@@ -401,7 +467,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 
 .empty-decks {
   font-size: 13px;
-  color: #4a4a6a;
+  color: var(--text-faint);
   text-align: center;
   padding: 12px 0;
 }
@@ -412,16 +478,14 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   align-items: center;
 }
 
-.url-input-group {
-  flex: 1;
-}
+.url-input-group { flex: 1; }
 
 .url-input-group input {
   flex: 1;
   background: transparent;
   border: none;
   outline: none;
-  color: #e8e8f0;
+  color: var(--text);
   font-size: 13px;
   padding: 7px 10px;
   width: 0;
@@ -437,7 +501,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   padding: 0 4px;
   line-height: 1;
   flex-shrink: 0;
-  color: #4a4a6a;
+  color: var(--text-faint);
   transition: color 0.2s;
 }
 
@@ -446,7 +510,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 .btn-ping.checking { animation: ping-pulse 1s ease-in-out infinite; }
 
 @keyframes ping-pulse {
-  0%, 100% { color: #4a4a6a; }
+  0%, 100% { color: var(--text-faint); }
   50%       { color: #f0c040; }
 }
 </style>

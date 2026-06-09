@@ -28,17 +28,17 @@ defineEmits(['update'])
 
 .field-label {
   font-size: 12px;
-  color: #7c7ca0;
+  color: var(--text-muted, #7c7ca0);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 select {
   width: 100%;
-  background: #0f0f1a;
-  border: 1px solid #2d2d4e;
+  background: var(--bg, #0f0f1a);
+  border: 1px solid var(--border, #2d2d4e);
   border-radius: 6px;
-  color: #e8e8f0;
+  color: var(--text, #e8e8f0);
   font-size: 14px;
   padding: 6px 10px;
   outline: none;
