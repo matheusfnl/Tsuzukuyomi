@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Spaced Review",
+  "name": "Tsuzukuyomi",
   "version": "1.0.0",
   "description": "Vocabulário japonês com Anki no seu fluxo de trabalho",
   "permissions": ["storage", "tabs", "activeTab", "scripting"],

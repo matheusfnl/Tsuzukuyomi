@@ -1,7 +1,10 @@
 <template>
   <div class="popup">
     <header class="header">
-      <span class="logo">🈚 Spaced Review</span>
+      <span class="logo">
+        <img :src="iconUrl" class="logo-icon" alt="" />
+        Tsuzukuyomi
+      </span>
       <label class="toggle">
         <input type="checkbox" v-model="settings.enabled" @change="save" />
         <span class="slider" />
@@ -92,8 +95,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import browser from 'webextension-polyfill'
+
+const iconUrl = browser.runtime.getURL('icons/icon48.png')
 import { getSettings, saveSettings } from '../utils/storage.js'
 import { getDeckNames, pingAnki, getRandomCard } from '../utils/anki.js'
+import { sendCardToTab } from '../utils/messaging.js'
 import DeckConfig from './components/DeckConfig.vue'
 import DeckPicker from './components/DeckPicker.vue'
 
@@ -186,10 +192,10 @@ async function testCard() {
       return
     }
     try {
-      await browser.tabs.sendMessage(tab.id, { type: 'SHOW_REVIEW', card })
+      await sendCardToTab(tab.id, card)
       window.close()
     } catch {
-      testError.value = 'Abra uma página web primeiro (não funciona em páginas internas do browser).'
+      testError.value = 'Não foi possível injetar na aba ativa. Tente em uma página web normal.'
     }
   } catch (err) {
     testError.value = `Erro: ${err.message}`
@@ -214,9 +220,18 @@ async function testCard() {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   font-size: 17px;
   letter-spacing: -0.02em;
+}
+
+.logo-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .toggle {
@@ -326,6 +341,15 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   font-size: 15px;
   padding: 7px 10px;
   width: 0;
+}
+
+.input-group input[type=number]::-webkit-inner-spin-button,
+.input-group input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.input-group input[type=number] {
+  -moz-appearance: textfield;
 }
 
 .unit {

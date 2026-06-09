@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill'
 import { getSettings } from '../utils/storage.js'
 import { getRandomCard, pingAnki } from '../utils/anki.js'
+import { sendCardToTab } from '../utils/messaging.js'
 
 let timerTimeout = null
 
@@ -35,7 +36,7 @@ async function triggerReview() {
       return
     }
 
-    await browser.tabs.sendMessage(tab.id, { type: 'SHOW_REVIEW', card })
+    await sendCardToTab(tab.id, card)
   } catch (err) {
     console.error('[spaced-review] erro ao buscar card:', err)
   }

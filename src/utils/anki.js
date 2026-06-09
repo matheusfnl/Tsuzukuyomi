@@ -18,9 +18,23 @@ export async function getDeckNames(url) {
 export async function getFieldsForDeck(deckName, url) {
   const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` }, url)
   if (!noteIds.length) return []
-  const notes = await invoke('notesInfo', { notes: noteIds.slice(0, 1) }, url)
-  if (!notes.length) return []
-  return Object.keys(notes[0].fields)
+
+  // Amostra espalhada para cobrir todos os tipos de nota do deck
+  const sample = noteIds.length <= 20
+    ? noteIds
+    : [0, 0.25, 0.5, 0.75, 1].map(p => noteIds[Math.floor(p * (noteIds.length - 1))])
+
+  const notes = await invoke('notesInfo', { notes: sample }, url)
+
+  // Descobre todos os modelos únicos presentes na amostra
+  const modelNames = [...new Set(notes.map(n => n.modelName))]
+
+  // Busca os campos de cada modelo e faz a união
+  const fieldSets = await Promise.all(
+    modelNames.map(m => invoke('modelFieldNames', { modelName: m }, url))
+  )
+
+  return [...new Set(fieldSets.flat())]
 }
 
 export async function getRandomCard(deckConfig, url) {
