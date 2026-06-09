@@ -27,7 +27,7 @@ defineEmits(['update'])
 }
 
 .field-label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted, #7c7ca0);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -39,8 +39,8 @@ select {
   border: 1px solid var(--border, #2d2d4e);
   border-radius: 6px;
   color: var(--text, #e8e8f0);
-  font-size: 15px;
-  padding: 7px 10px;
+  font-size: 14px;
+  padding: 6px 10px;
   outline: none;
   cursor: pointer;
 }

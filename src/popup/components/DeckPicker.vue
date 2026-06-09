@@ -98,7 +98,7 @@ defineEmits(['select', 'close'])
 }
 
 .deck-option-name {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text, #e8e8f0);
 }
 
