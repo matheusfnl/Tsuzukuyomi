@@ -2,7 +2,7 @@
   <div class="deck-item">
     <div class="deck-header">
       <span class="deck-name">{{ deck.deckName }}</span>
-      <button class="btn-remove" @click="$emit('remove')">✕</button>
+      <button class="btn-remove" @click="emit('remove')">✕</button>
     </div>
 
     <div v-if="loadingFields" class="loading">Carregando campos...</div>
@@ -43,6 +43,7 @@ import FieldSelect from './FieldSelect.vue'
 
 const props = defineProps({
   deck: { type: Object, required: true },
+  ankiUrl: { type: String, default: 'http://localhost:8765' },
 })
 
 const emit = defineEmits(['update', 'remove'])
@@ -53,7 +54,7 @@ const loadingFields = ref(true)
 
 onMounted(async () => {
   try {
-    const raw = await getFieldsForDeck(props.deck.deckName)
+    const raw = await getFieldsForDeck(props.deck.deckName, props.ankiUrl)
     fields.value = raw.map(f => ({ value: f, label: f }))
   } catch {
     fields.value = []

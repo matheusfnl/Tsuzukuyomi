@@ -8,8 +8,25 @@
       </label>
     </header>
 
-    <div v-if="!ankiConnected" class="banner-error">
+    <div v-if="!ankiChecking && !ankiConnected" class="banner-error">
       AnkiConnect não encontrado. Abra o Anki com o addon instalado.
+    </div>
+
+    <div class="section">
+      <label class="section-title">AnkiConnect</label>
+      <div class="url-row">
+        <div class="input-group url-input-group">
+          <input
+            type="text"
+            v-model="settings.ankiUrl"
+            placeholder="http://localhost:8765"
+            @change="onUrlChange"
+          />
+        </div>
+        <button class="btn-ping" :class="{ ok: ankiConnected, fail: !ankiConnected }" @click="recheckAnki">
+          {{ ankiConnected ? '●' : '○' }}
+        </button>
+      </div>
     </div>
 
     <div class="section">
@@ -46,6 +63,8 @@
         </div>
       </div>
 
+      <div v-if="testError" class="banner-error banner-test-error">{{ testError }}</div>
+
       <div v-if="settings.decks.length === 0" class="empty-decks">
         Nenhum deck selecionado
       </div>
@@ -54,6 +73,7 @@
         v-for="(deck, i) in settings.decks"
         :key="deck.deckName"
         :deck="deck"
+        :anki-url="settings.ankiUrl"
         @update="updateDeck(i, $event)"
         @remove="removeDeck(i)"
       />
@@ -62,7 +82,7 @@
     <DeckPicker
       v-if="showDeckPicker"
       :available-decks="availableDecks"
-      :selected-decks="settings.decks.map(d => d.deckName)"
+      :selected-decks="(settings.decks || []).map(d => d.deckName)"
       @select="addDeck"
       @close="showDeckPicker = false"
     />
@@ -85,10 +105,12 @@ const settings = ref({
 })
 
 const ankiConnected = ref(false)
+const ankiChecking = ref(true)
 const availableDecks = ref([])
 const loadingDecks = ref(false)
 const showDeckPicker = ref(false)
 const testing = ref(false)
+const testError = ref('')
 
 const canTest = computed(() =>
   ankiConnected.value &&
@@ -99,16 +121,27 @@ const canTest = computed(() =>
 
 onMounted(async () => {
   settings.value = await getSettings()
-  ankiConnected.value = await pingAnki()
+  await recheckAnki()
+})
+
+async function recheckAnki() {
+  ankiChecking.value = true
+  ankiConnected.value = await pingAnki(settings.value.ankiUrl)
+  ankiChecking.value = false
   if (ankiConnected.value) {
     loadingDecks.value = true
     try {
-      availableDecks.value = await getDeckNames()
+      availableDecks.value = await getDeckNames(settings.value.ankiUrl)
     } finally {
       loadingDecks.value = false
     }
   }
-})
+}
+
+async function onUrlChange() {
+  await save()
+  await recheckAnki()
+}
 
 async function save() {
   if (settings.value.intervalMin > settings.value.intervalMax) {
@@ -143,16 +176,23 @@ function removeDeck(index) {
 async function testCard() {
   if (!canTest.value) return
   testing.value = true
+  testError.value = ''
   try {
     const deck = settings.value.decks[Math.floor(Math.random() * settings.value.decks.length)]
-    const card = await getRandomCard(deck)
+    const card = await getRandomCard(deck, settings.value.ankiUrl)
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
-    if (tab?.id) {
+    if (!tab?.id) {
+      testError.value = 'Nenhuma aba ativa encontrada.'
+      return
+    }
+    try {
       await browser.tabs.sendMessage(tab.id, { type: 'SHOW_REVIEW', card })
       window.close()
+    } catch {
+      testError.value = 'Abra uma página web primeiro (não funciona em páginas internas do browser).'
     }
   } catch (err) {
-    console.error('[spaced-review] erro ao testar card:', err)
+    testError.value = `Erro: ${err.message}`
   } finally {
     testing.value = false
   }
@@ -218,6 +258,12 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   font-size: 12px;
   padding: 8px 16px;
   border-bottom: 1px solid rgba(255,80,80,0.2);
+}
+
+.banner-test-error {
+  border-bottom: none;
+  border-radius: 6px;
+  margin: 0 0 8px;
 }
 
 .section {
@@ -332,4 +378,40 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   text-align: center;
   padding: 12px 0;
 }
+
+.url-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.url-input-group {
+  flex: 1;
+}
+
+.url-input-group input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e8e8f0;
+  font-size: 12px;
+  padding: 6px 8px;
+  width: 0;
+  min-width: 0;
+  font-family: monospace;
+}
+
+.btn-ping {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.btn-ping.ok  { color: #7ef08a; }
+.btn-ping.fail { color: #4a4a6a; }
 </style>

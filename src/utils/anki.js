@@ -1,7 +1,7 @@
-const ANKI_URL = 'http://localhost:8765'
+export const DEFAULT_ANKI_URL = 'http://localhost:8765'
 
-async function invoke(action, params = {}) {
-  const response = await fetch(ANKI_URL, {
+async function invoke(action, params = {}, baseUrl = DEFAULT_ANKI_URL) {
+  const response = await fetch(baseUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action, version: 6, params }),
@@ -11,49 +11,25 @@ async function invoke(action, params = {}) {
   return data.result
 }
 
-export async function getDeckNames() {
-  return invoke('deckNames')
+export async function getDeckNames(url) {
+  return invoke('deckNames', {}, url)
 }
 
-export async function getDeckNamesAndIds() {
-  return invoke('deckNamesAndIds')
-}
-
-export async function getModelFieldNames(modelName) {
-  return invoke('modelFieldNames', { modelName })
-}
-
-export async function findCards(deckName) {
-  return invoke('findCards', { query: `deck:"${deckName}"` })
-}
-
-export async function getCardsInfo(cardIds) {
-  return invoke('cardsInfo', { cards: cardIds })
-}
-
-export async function getDeckModels(deckName) {
-  const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` })
+export async function getFieldsForDeck(deckName, url) {
+  const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` }, url)
   if (!noteIds.length) return []
-  const notes = await invoke('notesInfo', { notes: noteIds.slice(0, 10) })
-  const models = [...new Set(notes.map(n => n.modelName))]
-  return models
-}
-
-export async function getFieldsForDeck(deckName) {
-  const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` })
-  if (!noteIds.length) return []
-  const notes = await invoke('notesInfo', { notes: noteIds.slice(0, 1) })
+  const notes = await invoke('notesInfo', { notes: noteIds.slice(0, 1) }, url)
   if (!notes.length) return []
   return Object.keys(notes[0].fields)
 }
 
-export async function getRandomCard(deckConfig) {
+export async function getRandomCard(deckConfig, url) {
   const { deckName, questionField, answerField, sentenceField } = deckConfig
-  const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` })
+  const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` }, url)
   if (!noteIds.length) throw new Error(`Deck "${deckName}" está vazio`)
 
   const randomId = noteIds[Math.floor(Math.random() * noteIds.length)]
-  const notes = await invoke('notesInfo', { notes: [randomId] })
+  const notes = await invoke('notesInfo', { notes: [randomId] }, url)
   const note = notes[0]
 
   const getFieldValue = (fieldName) => {
@@ -69,9 +45,9 @@ export async function getRandomCard(deckConfig) {
   }
 }
 
-export async function pingAnki() {
+export async function pingAnki(url) {
   try {
-    await invoke('version')
+    await invoke('version', {}, url)
     return true
   } catch {
     return false

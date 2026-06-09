@@ -20,7 +20,7 @@ async function triggerReview() {
   const settings = await getSettings()
   if (!settings.enabled || !settings.decks.length) return
 
-  const ankiAlive = await pingAnki()
+  const ankiAlive = await pingAnki(settings.ankiUrl)
   if (!ankiAlive) {
     scheduleNext(settings)
     return
@@ -28,7 +28,7 @@ async function triggerReview() {
 
   const deck = settings.decks[Math.floor(Math.random() * settings.decks.length)]
   try {
-    const card = await getRandomCard(deck)
+    const card = await getRandomCard(deck, settings.ankiUrl)
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
     if (!tab?.id) {
       scheduleNext(settings)
