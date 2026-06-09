@@ -221,7 +221,7 @@ async function testCard() {
 <style>
 /* propaga variáveis para componentes filhos (scoped não atravessa slots) */
 .theme-dark { --bg:#0f0f1a;--bg-section:#1a1a2e;--bg-input:#1e1e32;--border:#2d2d4e;--border-soft:#1e1e32;--text:#e8e8f0;--text-muted:#7c7ca0;--text-faint:#4a4a6a;--deck-border:#2d2d4e; }
-.theme-light { --bg:#f0f0f8;--bg-section:#e4e4f0;--bg-input:#d8d8ec;--border:#d0d0e8;--border-soft:#e4e4f0;--text:#1a1a2e;--text-muted:#6060a0;--text-faint:#a0a0c0;--deck-border:transparent; }
+.theme-light { --bg:#ffffff;--bg-section:#ededf6;--bg-input:#e2e2ef;--border:#d0d0e8;--border-soft:#e8e8f2;--text:#1a1a2e;--text-muted:#6060a0;--text-faint:#a0a0c0;--deck-border:transparent; }
 </style>
 
 <style scoped>
@@ -244,11 +244,11 @@ async function testCard() {
 }
 
 .theme-light {
-  --bg:          #f0f0f8;
-  --bg-section:  #e4e4f0;
-  --bg-input:    #d8d8ec;
+  --bg:          #ffffff;
+  --bg-section:  #ededf6;
+  --bg-input:    #e2e2ef;
   --border:      #d0d0e8;
-  --border-soft: #e4e4f0;
+  --border-soft: #e8e8f2;
   --text:        #1a1a2e;
   --text-muted:  #6060a0;
   --text-faint:  #a0a0c0;
@@ -369,7 +369,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 }
 
 .section-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -394,7 +394,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 }
 
 .field-label {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 
@@ -413,7 +413,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   border: none;
   outline: none;
   color: var(--text);
-  font-size: 15px;
+  font-size: 16px;
   padding: 7px 10px;
   width: 0;
 }
@@ -426,7 +426,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 .input-group input[type=number] { -moz-appearance: textfield; }
 
 .unit {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-muted);
   padding: 0 10px;
 }
@@ -444,8 +444,8 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 .btn-add, .btn-test {
   border: none;
   border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 7px 14px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -468,7 +468,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 }
 
 .empty-decks {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-faint);
   text-align: center;
   padding: 12px 0;
@@ -488,7 +488,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   border: none;
   outline: none;
   color: var(--text);
-  font-size: 13px;
+  font-size: 15px;
   padding: 7px 10px;
   width: 0;
   min-width: 0;
