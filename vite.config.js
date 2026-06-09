@@ -1,7 +1,7 @@
 import { defineConfig, build as viteBuild } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
-import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs'
+import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync, readFileSync, writeFileSync } from 'fs'
 
 const __dirname = new URL('.', import.meta.url).pathname.replace(/\/$/, '')
 
@@ -16,19 +16,24 @@ function copyDir(src, dest) {
   }
 }
 
-function extensionAssets(outDir) {
+function extensionAssets(outDir, browser) {
   return {
     name: 'extension-assets',
     closeBundle() {
-      copyFileSync('manifest.json', resolve(outDir, 'manifest.json'))
+      const manifest = JSON.parse(readFileSync('manifest.json', 'utf-8'))
+      if (browser === 'firefox') {
+        delete manifest.background.service_worker
+        manifest.background.scripts = ['src/background/index.js']
+      }
+      writeFileSync(resolve(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2))
       if (existsSync('icons')) copyDir('icons', resolve(outDir, 'icons'))
     },
   }
 }
 
-function buildContentIIFE(outDir) {
+function buildSingleFile(outDir, entry, outFile, iifeExport) {
   return {
-    name: 'build-content-iife',
+    name: `build-single-${outFile}`,
     async closeBundle() {
       await viteBuild({
         configFile: false,
@@ -38,13 +43,13 @@ function buildContentIIFE(outDir) {
           outDir,
           emptyOutDir: false,
           lib: {
-            entry: resolve(__dirname, 'src/content/index.js'),
+            entry: resolve(__dirname, entry),
             formats: ['iife'],
-            name: 'SpacedReviewContent',
+            name: iifeExport,
           },
           rollupOptions: {
             output: {
-              entryFileNames: 'src/content/index.js',
+              entryFileNames: outFile,
               assetFileNames: 'assets/[name][extname]',
             },
           },
@@ -60,8 +65,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vue(),
-      buildContentIIFE(outDir),
-      extensionAssets(outDir),
+      buildSingleFile(outDir, 'src/content/index.js', 'src/content/index.js', 'SpacedReviewContent'),
+      buildSingleFile(outDir, 'src/background/index.js', 'src/background/index.js', 'SpacedReviewBackground'),
+      extensionAssets(outDir, mode === 'firefox' ? 'firefox' : 'chrome'),
     ],
     base: '',
     build: {
@@ -70,13 +76,8 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           popup: resolve(__dirname, 'src/popup/index.html'),
-          background: resolve(__dirname, 'src/background/index.js'),
         },
         output: {
-          entryFileNames: (chunk) => {
-            if (chunk.name === 'background') return 'src/background/index.js'
-            return 'assets/[name]-[hash].js'
-          },
           chunkFileNames: 'assets/[name]-[hash].js',
           assetFileNames: 'assets/[name]-[hash][extname]',
         },
