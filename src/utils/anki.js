@@ -74,22 +74,32 @@ export async function getRandomCard(deckConfig, url) {
   const noteIds = await invoke('findNotes', { query: `deck:"${deckName}"` }, url)
   if (!noteIds.length) throw new Error(`Deck "${deckName}" is empty`)
 
-  const randomId = noteIds[Math.floor(Math.random() * noteIds.length)]
-  const notes = await invoke('notesInfo', { notes: [randomId] }, url)
-  const note = notes[0]
+  const MAX_TRIES = 5
+  const shuffled = [...noteIds].sort(() => Math.random() - 0.5)
 
-  const getFieldValue = (fieldName) => {
-    if (!fieldName || !note.fields[fieldName]) return null
-    return note.fields[fieldName].value
+  for (let i = 0; i < Math.min(MAX_TRIES, shuffled.length); i++) {
+    const notes = await invoke('notesInfo', { notes: [shuffled[i]] }, url)
+    const note = notes[0]
+
+    const getFieldValue = (fieldName) => {
+      if (!fieldName || !note.fields[fieldName]) return null
+      return note.fields[fieldName].value
+    }
+
+    const rawQuestion = getFieldValue(questionField)
+    const rawAnswer = getFieldValue(answerField)
+    if (!rawQuestion || !rawAnswer) continue
+
+    const [question, answer, sentence] = await Promise.all([
+      resolveImages(rawQuestion, url),
+      resolveImages(rawAnswer, url),
+      resolveImages(sentenceField ? getFieldValue(sentenceField) : null, url),
+    ])
+
+    return { question, answer, sentence, deckName }
   }
 
-  const [question, answer, sentence] = await Promise.all([
-    resolveImages(getFieldValue(questionField), url),
-    resolveImages(getFieldValue(answerField), url),
-    resolveImages(sentenceField ? getFieldValue(sentenceField) : null, url),
-  ])
-
-  return { question, answer, sentence, deckName }
+  throw new Error(`No cards found in "${deckName}" with the configured fields`)
 }
 
 export async function pingAnki(url) {
