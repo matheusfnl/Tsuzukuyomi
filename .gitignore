@@ -1,3 +1,6 @@
 node_modules/
 dist-chrome/
 dist-firefox/
+
+.idea
+.claude
