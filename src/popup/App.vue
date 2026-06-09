@@ -23,11 +23,11 @@
             type="text"
             v-model="settings.ankiUrl"
             placeholder="http://localhost:8765"
-            @change="onUrlChange"
+            @blur="onUrlChange"
           />
         </div>
-        <button class="btn-ping" :class="{ ok: ankiConnected, fail: !ankiConnected }" @click="recheckAnki">
-          {{ ankiConnected ? '●' : '○' }}
+        <button class="btn-ping" :class="{ checking: ankiChecking, ok: ankiConnected && !ankiChecking, fail: !ankiConnected && !ankiChecking }" @click="recheckAnki">
+          ●
         </button>
       </div>
     </div>
@@ -74,7 +74,7 @@
 
       <DeckConfig
         v-for="(deck, i) in settings.decks"
-        :key="deck.deckName"
+        :key="deck.deckName + '-' + deckConfigKey"
         :deck="deck"
         :anki-url="settings.ankiUrl"
         @update="updateDeck(i, $event)"
@@ -112,6 +112,7 @@ const settings = ref({
 
 const ankiConnected = ref(false)
 const ankiChecking = ref(true)
+const deckConfigKey = ref(0)
 const availableDecks = ref([])
 const loadingDecks = ref(false)
 const showDeckPicker = ref(false)
@@ -141,6 +142,7 @@ async function recheckAnki() {
     } finally {
       loadingDecks.value = false
     }
+    deckConfigKey.value++
   }
 }
 
@@ -434,8 +436,16 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   padding: 0 4px;
   line-height: 1;
   flex-shrink: 0;
+  color: #4a4a6a;
+  transition: color 0.2s;
 }
 
-.btn-ping.ok  { color: #7ef08a; }
-.btn-ping.fail { color: #4a4a6a; }
+.btn-ping.ok   { color: #7ef08a; }
+.btn-ping.fail { color: #ff6060; }
+.btn-ping.checking { animation: ping-pulse 1s ease-in-out infinite; }
+
+@keyframes ping-pulse {
+  0%, 100% { color: #4a4a6a; }
+  50%       { color: #f0c040; }
+}
 </style>
