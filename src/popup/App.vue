@@ -221,7 +221,7 @@ async function testCard() {
 <style>
 /* propaga variáveis para componentes filhos (scoped não atravessa slots) */
 .theme-dark { --bg:#0f0f1a;--bg-section:#1a1a2e;--bg-input:#1e1e32;--border:#2d2d4e;--border-soft:#1e1e32;--text:#e8e8f0;--text-muted:#7c7ca0;--text-faint:#4a4a6a;--deck-border:#2d2d4e; }
-.theme-light { --bg:#f0f0f8;--bg-section:#ededf6;--bg-input:#e2e2ef;--border:#d0d0e8;--border-soft:#e8e8f2;--text:#1a1a2e;--text-muted:#6060a0;--text-faint:#a0a0c0;--deck-border:transparent; }
+.theme-light { --bg:#f0f0f8;--bg-section:#e4e4f0;--bg-input:#e2e2ef;--border:#d0d0e8;--border-soft:#e8e8f2;--text:#1a1a2e;--text-muted:#6060a0;--text-faint:#a0a0c0;--deck-border:transparent; }
 </style>
 
 <style scoped>
@@ -245,7 +245,7 @@ async function testCard() {
 
 .theme-light {
   --bg:          #f0f0f8;
-  --bg-section:  #ededf6;
+  --bg-section:  #e4e4f0;
   --bg-input:    #e2e2ef;
   --border:      #d0d0e8;
   --border-soft: #e8e8f2;
