@@ -19,7 +19,9 @@ export async function getSettings() {
 }
 
 export async function saveSettings(settings) {
-  await browser.storage.local.set({ settings })
+  // Serialize to plain object — Vue Proxy não é serializável diretamente pelo storage
+  const plain = JSON.parse(JSON.stringify(settings))
+  await browser.storage.local.set({ settings: plain })
 }
 
 export async function updateSettings(partial) {

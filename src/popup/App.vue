@@ -148,7 +148,7 @@ async function save() {
     settings.value.intervalMax = settings.value.intervalMin
   }
   await saveSettings(settings.value)
-  browser.runtime.sendMessage({ type: 'SETTINGS_UPDATED' })
+  browser.runtime.sendMessage({ type: 'SETTINGS_UPDATED' }).catch(() => {})
 }
 
 function addDeck(deckName) {
@@ -215,7 +215,7 @@ async function testCard() {
 
 .logo {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: -0.02em;
 }
 
@@ -279,7 +279,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -304,7 +304,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 }
 
 .field-label {
-  font-size: 11px;
+  font-size: 13px;
   color: #7c7ca0;
 }
 
@@ -323,15 +323,15 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   border: none;
   outline: none;
   color: #e8e8f0;
-  font-size: 14px;
-  padding: 6px 8px;
+  font-size: 15px;
+  padding: 7px 10px;
   width: 0;
 }
 
 .unit {
-  font-size: 12px;
+  font-size: 14px;
   color: #7c7ca0;
-  padding: 0 8px;
+  padding: 0 10px;
 }
 
 .interval-sep {
@@ -347,8 +347,8 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 .btn-add, .btn-test {
   border: none;
   border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -373,7 +373,7 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
 }
 
 .empty-decks {
-  font-size: 12px;
+  font-size: 13px;
   color: #4a4a6a;
   text-align: center;
   padding: 12px 0;
@@ -395,8 +395,8 @@ input:checked + .slider::before { transform: translateX(18px); background: #fff;
   border: none;
   outline: none;
   color: #e8e8f0;
-  font-size: 12px;
-  padding: 6px 8px;
+  font-size: 13px;
+  padding: 7px 10px;
   width: 0;
   min-width: 0;
   font-family: monospace;

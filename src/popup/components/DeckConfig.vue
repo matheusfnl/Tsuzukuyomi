@@ -92,7 +92,7 @@ function onField(key, value) {
 }
 
 .deck-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #c8c8e8;
   white-space: nowrap;
@@ -118,7 +118,7 @@ function onField(key, value) {
 }
 
 .loading, .field-error {
-  font-size: 11px;
+  font-size: 13px;
   color: #7c7ca0;
   text-align: center;
   padding: 4px 0;

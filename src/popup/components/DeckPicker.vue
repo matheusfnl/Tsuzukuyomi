@@ -98,12 +98,12 @@ defineEmits(['select', 'close'])
 }
 
 .deck-option-name {
-  font-size: 13px;
+  font-size: 15px;
   color: #e8e8f0;
 }
 
 .added-badge {
-  font-size: 10px;
+  font-size: 12px;
   color: #6c63ff;
   font-weight: 600;
 }
